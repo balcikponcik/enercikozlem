@@ -423,35 +423,54 @@ function limb(x1, y1, x2, y2, x3, y3, color, w){
   ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(x3, y3); ctx.stroke();
 }
 
+function outfitPath(pts){
+  ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.closePath();
+}
 function drawGirl(x, y, t, dancing){
   ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
-  const skin = '#f2c6a0', dress = '#2ec4b6', dressDk = '#1d8f86', leg = '#5b2d8a';
+  const skin = '#f2c6a0', body = '#121014', denim = '#1f2028', stitch = '#6b7080', rim = 'rgba(255,240,255,0.32)';
+  ctx.lineJoin = 'round';
   if (!dancing){
-    // sitting cross-legged
-    ctx.fillStyle = leg; ctx.beginPath(); ctx.ellipse(0, -5, 18, 6, 0, 0, 7); ctx.fill();
-    ctx.fillStyle = dress;
-    ctx.beginPath(); ctx.moveTo(-12, -7); ctx.lineTo(12, -7); ctx.lineTo(8, -34); ctx.lineTo(-8, -34); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = dressDk; ctx.fillRect(-11, -15, 22, 3);
+    // sitting cross-legged: bare legs, black denim shorts, black bodysuit
+    ctx.fillStyle = skin; ctx.beginPath(); ctx.ellipse(0, -4.5, 18, 5.5, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#121014'; ctx.beginPath(); ctx.ellipse(-16, -3, 3.5, 2.5, 0, 0, 7); ctx.ellipse(16, -3, 3.5, 2.5, 0, 0, 7); ctx.fill();
+    outfitPath([[-12,-5],[12,-5],[12,-14],[-12,-14]]);
+    ctx.fillStyle = denim; ctx.fill(); ctx.strokeStyle = rim; ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = stitch; ctx.setLineDash([2, 2]); ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-11, -7); ctx.lineTo(11, -7); ctx.moveTo(0, -13); ctx.lineTo(0, -7); ctx.stroke(); ctx.setLineDash([]);
+    outfitPath([[-11,-13],[11,-13],[8,-34],[-8,-34]]);
+    ctx.fillStyle = body; ctx.fill(); ctx.strokeStyle = rim; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(0, -34, 4, 0, Math.PI); ctx.fill();
     const s = Math.sin(t*4)*2;
     limb(-8, -31, -14, -20, -9 + s, -11, skin, 4);
     limb(8, -31, 14, -20, 9 - s, -11, skin, 4);
+    ctx.fillStyle = body; ctx.beginPath(); ctx.arc(-8, -31, 3, 0, 7); ctx.arc(8, -31, 3, 0, 7); ctx.fill();
     drawHead(0, -46, Math.sin(t*2)*0.05, false);
   } else {
-    const sway = Math.sin(t*7)*5, hop = -Math.abs(Math.sin(t*7))*5;
-    // legs
-    limb(-3 + sway*0.3, -20 + hop, -6 + Math.sin(t*7)*3, -10, -7, 0, leg, 5);
-    limb(3 + sway*0.3, -20 + hop, 6 + Math.sin(t*7 + 1)*3, -10, 7, 0, leg, 5);
-    // twirling skirt + torso
-    const flare = 14 + Math.abs(Math.sin(t*7))*5;
-    ctx.fillStyle = dress;
-    ctx.beginPath(); ctx.moveTo(-flare + sway*0.5, -16 + hop); ctx.lineTo(flare + sway*0.5, -16 + hop);
-    ctx.lineTo(7 + sway, -44 + hop); ctx.lineTo(-7 + sway, -44 + hop); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = dressDk; ctx.fillRect(-flare + 2 + sway*0.5, -20 + hop, (flare - 2)*2, 3);
+    const sway = Math.sin(t*7)*5, hop = -Math.abs(Math.sin(t*7))*5, hx = sway*0.4;
+    // bare legs with black sneakers
+    const lf = [-7 + Math.sin(t*7)*1.5, 0], rf = [7 + Math.sin(t*7 + 1)*1.5, 0];
+    limb(-4 + hx, -18 + hop, -6 + Math.sin(t*7)*3, -9, lf[0], -2, skin, 5);
+    limb(4 + hx, -18 + hop, 6 + Math.sin(t*7 + 1)*3, -9, rf[0], -2, skin, 5);
+    ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(lf[0] - 1, -1, 4, 2.5, 0, 0, 7); ctx.ellipse(rf[0] + 1, -1, 4, 2.5, 0, 0, 7); ctx.fill();
+    // black denim shorts
+    outfitPath([[-9+hx,-27+hop],[9+hx,-27+hop],[10+hx,-16+hop],[1.5+hx,-16+hop],[0+hx,-20+hop],[-1.5+hx,-16+hop],[-10+hx,-16+hop]]);
+    ctx.fillStyle = denim; ctx.fill(); ctx.strokeStyle = rim; ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = stitch; ctx.setLineDash([2, 2]); ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-9+hx, -24+hop); ctx.lineTo(9+hx, -24+hop);
+    ctx.moveTo(-9.5+hx, -18+hop); ctx.lineTo(-2+hx, -18+hop); ctx.moveTo(2+hx, -18+hop); ctx.lineTo(9.5+hx, -18+hop); ctx.stroke(); ctx.setLineDash([]);
+    // black bodysuit
+    outfitPath([[-8.5+hx,-26+hop],[8.5+hx,-26+hop],[7+sway,-44+hop],[-7+sway,-44+hop]]);
+    ctx.fillStyle = body; ctx.fill(); ctx.strokeStyle = rim; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(sway, -44 + hop, 4, 0, Math.PI); ctx.fill();
     // arms up, waving
     const sh = -40 + hop;
     const a1 = -2.2 + Math.sin(t*8)*0.5, a2 = -0.95 + Math.sin(t*8 + 2)*0.5;
     limb(-7 + sway, sh, -7 + sway + Math.cos(a1)*11, sh + Math.sin(a1)*11, -7 + sway + Math.cos(a1 - 0.5)*21, sh + Math.sin(a1 - 0.5)*21, skin, 4);
     limb(7 + sway, sh, 7 + sway + Math.cos(a2)*11, sh + Math.sin(a2)*11, 7 + sway + Math.cos(a2 + 0.5)*21, sh + Math.sin(a2 + 0.5)*21, skin, 4);
+    ctx.fillStyle = body; ctx.beginPath(); ctx.arc(-7 + sway, sh, 3, 0, 7); ctx.arc(7 + sway, sh, 3, 0, 7); ctx.fill();
     drawHead(sway, -56 + hop, Math.sin(t*7)*0.18, true);
   }
   ctx.restore();
